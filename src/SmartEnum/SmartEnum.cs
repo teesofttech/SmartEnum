@@ -266,26 +266,31 @@ namespace Ardalis.SmartEnum
         /// When this method returns, contains the item associated with the specified value, if the value is found;
         /// otherwise, <c>null</c>. This parameter is passed uninitialized.</param>
         /// <returns>
-        /// <c>true</c> if the <see cref="SmartEnum{TEnum, TValue}"/> contains an item with the specified name; otherwise, <c>false</c>.
+        /// <c>true</c> if the <see cref="SmartEnum{TEnum, TValue}"/> contains an item with the specified value; otherwise, <c>false</c>.
         /// </returns>
         /// <seealso cref="SmartEnum{TEnum, TValue}.FromValue(TValue)"/>
         /// <seealso cref="SmartEnum{TEnum, TValue}.FromValue(TValue, TEnum)"/>
 #nullable enable
-        public static bool TryFromValue(TValue? value, out TEnum result)
+        public static bool TryFromValue(TValue? value, [NotNullWhen(true)] out TEnum? result)
         {
-            if (value is null)
+            if (value is not null)
             {
-                result = default!;
-                return false;
+                if (_fromValue.Value.TryGetValue(value, out var resolvedValue))
+                {
+                    result = resolvedValue!;
+                    return true;
+                }
+            }
+            else
+            {
+                result = _enumOptions.Value.FirstOrDefault(x => x.Value is null);
+                if (result != null)
+                {
+                    return true;
+                }
             }
 
-            if (_fromValue.Value.TryGetValue(value, out var resolvedValue))
-            {
-                result = resolvedValue!;
-                return true;
-            }
-
-            result = default!;
+            result = null;
             return false;
         }
 #nullable restore

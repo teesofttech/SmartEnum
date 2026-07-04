@@ -40,5 +40,14 @@ namespace Ardalis.SmartEnum.UnitTests
             result.Should().BeTrue();
             output.Should().BeSameAs(TestStringEnum.One);
         }
+
+        [Fact]
+        public void ReturnsTrueAndEnumGivenMatchingNullValue()
+        {
+            var result = TestNullableStringEnum.TryFromValue(null, out var output);
+
+            result.Should().BeTrue();
+            output.Should().BeSameAs(TestNullableStringEnum.None);
+        }
     }
 }
