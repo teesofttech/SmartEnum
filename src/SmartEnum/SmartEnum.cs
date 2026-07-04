@@ -270,16 +270,25 @@ namespace Ardalis.SmartEnum
         /// </returns>
         /// <seealso cref="SmartEnum{TEnum, TValue}.FromValue(TValue)"/>
         /// <seealso cref="SmartEnum{TEnum, TValue}.FromValue(TValue, TEnum)"/>
-        public static bool TryFromValue(TValue value, out TEnum result)
+#nullable enable
+        public static bool TryFromValue(TValue? value, out TEnum result)
         {
             if (value is null)
             {
-                result = default;
+                result = default!;
                 return false;
             }
 
-            return _fromValue.Value.TryGetValue(value, out result);
+            if (_fromValue.Value.TryGetValue(value, out var resolvedValue))
+            {
+                result = resolvedValue!;
+                return true;
+            }
+
+            result = default!;
+            return false;
         }
+#nullable restore
 
         /// <summary>
         ///
